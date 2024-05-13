@@ -16,6 +16,13 @@ export class UserService {
   private userRepository: Repository<User>;
 
   async register(user: RegisterUserDto) {
+    const findUserEnail = await this.userRepository.findOneBy({
+      email: user.email,
+    });
+    if (findUserEnail) {
+      throw new HttpException('该邮箱已注册', HttpStatus.BAD_REQUEST);
+    }
+
     const captcha = await this.redisService.get(`captcha_${user.email}`);
     if (!captcha) {
       throw new HttpException('验证码已失效', HttpStatus.BAD_REQUEST);
@@ -28,7 +35,7 @@ export class UserService {
       username: user.username,
     });
     if (findUser) {
-      throw new HttpException('用户已存在', HttpStatus.BAD_REQUEST);
+      throw new HttpException('该用户已存在', HttpStatus.BAD_REQUEST);
     }
 
     const newUser = new User();
