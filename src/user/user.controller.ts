@@ -48,18 +48,52 @@ export class UserController {
   @Post('login')
   async userLogin(@Body() loginUserDto: LoginUserDto) {
     const vo = await this.userService.login(loginUserDto, false);
-    const { access_token, refresh_token } = this.userService.getAccessAndRefreshToken(vo.userInfo);
+    const { access_token, refresh_token } =
+      this.userService.getAccessAndRefreshToken(vo.userInfo);
     vo.accessToken = access_token;
     vo.refreshToken = refresh_token;
     return vo;
   }
 
+  @Get('refresh')
+  async refresh(@Query('refreshToken') refreshToken: string) {
+    try {
+      const data = this.jwtService.verify(refreshToken);
+      const user = await this.userService.findUserById(data.userId, false);
+      const { access_token, refresh_token } =
+        this.userService.getAccessAndRefreshToken(user);
+      return {
+        access_token,
+        refresh_token,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('token 已失效，请重新登录');
+    }
+  }
+
   @Post('admin/login')
   async adminLogin(@Body() loginUserDto: LoginUserDto) {
     const vo = await this.userService.login(loginUserDto, true);
-    const { access_token, refresh_token } = this.userService.getAccessAndRefreshToken(vo.userInfo);
+    const { access_token, refresh_token } =
+      this.userService.getAccessAndRefreshToken(vo.userInfo);
     vo.accessToken = access_token;
     vo.refreshToken = refresh_token;
     return vo;
+  }
+
+  @Get('admin/refresh')
+  async adminRefresh(@Query('refreshToken') refreshToken: string) {
+    try {
+      const data = this.jwtService.verify(refreshToken);
+      const user = await this.userService.findUserById(data.userId, true);
+      const { access_token, refresh_token } =
+        this.userService.getAccessAndRefreshToken(user);
+      return {
+        access_token,
+        refresh_token,
+      };
+    } catch (e) {
+      throw new UnauthorizedException('token 已失效，请重新登录');
+    }
   }
 }
