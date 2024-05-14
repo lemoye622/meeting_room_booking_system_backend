@@ -14,6 +14,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
 import { UserDetailVo } from './vo/user-info.vo';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 
 @Controller('user')
 export class UserController {
@@ -115,5 +116,12 @@ export class UserController {
     vo.isFrozen = user.isFrozen;
 
     return vo;
+  }
+
+  // @Post 写个数组，表示数组里的这两个路由是同一个 handler 处理
+  @Post(['update_password', 'admin/update_password'])
+  @RequireLogin()
+  async updatePassword(@UserInfo('userId') userId: number, @Body() passwordDto: UpdateUserPasswordDto) {
+    return await this.userService.updatePassword(userId, passwordDto);
   }
 }
