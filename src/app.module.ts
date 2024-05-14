@@ -10,6 +10,8 @@ import { RedisModule } from './redis/redis.module';
 import { EmailModule } from './email/email.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
+import { LoginGuard } from './login.guard';
 
 @Module({
   imports: [
@@ -55,6 +57,13 @@ import { JwtModule } from '@nestjs/jwt';
     EmailModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // 全局启用LoginGuard
+    {
+      provide: APP_GUARD,
+      useClass: LoginGuard
+    }
+  ],
 })
 export class AppModule {}
