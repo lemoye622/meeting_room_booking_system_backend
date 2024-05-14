@@ -138,14 +138,7 @@ export class UserService {
       isFrozen: user.isFrozen,
       isAdmin: user.isAdmin,
       roles: user.roles.map((item) => item.name),
-      permissions: user.roles.reduce((arr, item) => {
-        item.permissions.forEach((permission) => {
-          if (!arr.includes(permission)) {
-            arr.push(permission);
-          }
-        });
-        return arr;
-      }, []),
+      permissions: this.getUserPermissions(user),
     };
 
     return vo;
@@ -164,15 +157,19 @@ export class UserService {
       username: user.username,
       isAdmin: user.isAdmin,
       roles: user.roles.map((item) => item.name),
-      permissions: user.roles.reduce((arr, item) => {
-        item.permissions.forEach((permission) => {
-          if (arr.indexOf(permission) === -1) {
-            arr.push(permission);
-          }
-        });
-        return arr;
-      }, []),
+      permissions: this.getUserPermissions(user),
     };
+  }
+
+  getUserPermissions(user: User) {
+    return user.roles.reduce((arr, item) => {
+      item.permissions.forEach((permission) => {
+        if (arr.indexOf(permission) === -1) {
+          arr.push(permission);
+        }
+      });
+      return arr;
+    }, []);
   }
 
   getAccessAndRefreshToken(data: any) {
