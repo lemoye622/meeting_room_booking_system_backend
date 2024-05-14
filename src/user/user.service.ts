@@ -161,6 +161,15 @@ export class UserService {
     };
   }
 
+  async findUserDetailById(userId: number) {
+    const user = this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    return user;
+  }
+
   getUserPermissions(user: User) {
     return user.roles.reduce((arr, item) => {
       item.permissions.forEach((permission) => {
