@@ -12,7 +12,7 @@ export class CustomExceptionFilter implements ExceptionFilter {
     response.json({
       code: exception.getStatus(),
       message: 'fail',
-      data: res?.message?.join(',') || exception.message
+      data: Array.isArray(res?.message) ? res?.message?.join(',') : exception.message
     }).end();
   }
 }

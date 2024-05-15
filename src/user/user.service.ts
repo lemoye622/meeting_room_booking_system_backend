@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { md5 } from 'src/utils';
@@ -243,6 +243,34 @@ export class UserService {
     user.isFrozen = true;
 
     await this.userRepository.save(user);
+  }
+
+  async findUsers(username: string, nickName: string, email: string, page: number, limit: number) {
+    const skipCount = (page - 1) * limit;
+    const condition: Record<string, any> = {};
+
+    // 模糊查询
+    if(username) {
+      condition.username = Like(`%${username}%`);   
+    }
+    if(nickName) {
+        condition.nickName = Like(`%${nickName}%`); 
+    }
+    if(email) {
+        condition.email = Like(`%${email}%`); 
+    }
+
+    const [users, total ] = await this.userRepository.findAndCount({
+      select: ['id', 'username', 'nickName', 'email', 'phoneNumber', 'isFrozen', 'headPic', 'createTime'], // 指定下 select 的字段
+      skip: skipCount,
+      take: limit,
+      where: condition
+    });
+
+    return {
+      users,
+      total
+    }
   }
 
   getUserPermissions(user: User) {

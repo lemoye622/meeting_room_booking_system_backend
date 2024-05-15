@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
   Post,
   Query,
@@ -15,6 +16,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateUserDto } from './dto/udpate-user.dto';
+import { generateParseInPipe } from 'src/utils';
 
 @Controller('user')
 export class UserController {
@@ -147,5 +149,16 @@ export class UserController {
   async freeze(@Query('id') userId: number) {
     await this.userService.freezeUserById(userId);
     return 'success';
+  }
+
+  @Get('list')
+  async list(
+    @Query('page', new DefaultValuePipe(1), generateParseInPipe('page')) page: number, 
+    @Query('limit', new DefaultValuePipe(2), generateParseInPipe('limit')) limit: number,
+    @Query('username') username: string,
+    @Query('nickName') nickName: string,
+    @Query('email') email: string
+  ) {
+    return await this.userService.findUsers(username, nickName, email, page, limit);
   }
 }
