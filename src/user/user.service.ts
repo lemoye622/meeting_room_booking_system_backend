@@ -236,6 +236,15 @@ export class UserService {
     }
   }
 
+  async freezeUserById(userId: number) {
+    const user = await this.userRepository.findOneBy({
+      id: userId
+    });
+    user.isFrozen = true;
+
+    await this.userRepository.save(user);
+  }
+
   getUserPermissions(user: User) {
     return user.roles.reduce((arr, item) => {
       item.permissions.forEach((permission) => {
