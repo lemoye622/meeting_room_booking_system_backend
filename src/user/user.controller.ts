@@ -13,8 +13,8 @@ import { RedisService } from 'src/redis/redis.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
-import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
+import { UpdateUserDto } from './dto/udpate-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -125,5 +125,11 @@ export class UserController {
       html: `<p>你的更改密码验证码是 ${code}</p>`
     });
     return '发送成功';
+  }
+
+  @Post(['update', 'admin/update'])
+  @RequireLogin()
+  async updateUserInfo(@UserInfo('userId') userId: number, @Body() updateUserDto: UpdateUserDto) {
+    return await this.userService.updateUserInfo(userId, updateUserDto);
   }
 }
