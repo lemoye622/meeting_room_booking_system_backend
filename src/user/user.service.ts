@@ -12,6 +12,7 @@ import { LoginUserVo } from './vo/login-user.vo';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
+import { UserDetailVo } from './vo/user-info.vo';
 
 @Injectable()
 export class UserService {
@@ -163,12 +164,23 @@ export class UserService {
   }
 
   async findUserDetailById(userId: number) {
-    const user = this.userRepository.findOne({
+    const user = await this.userRepository.findOne({
       where: {
         id: userId,
       },
     });
-    return user;
+
+    const vo = new UserDetailVo();
+    vo.id = user.id;
+    vo.email = user.email;
+    vo.username = user.username;
+    vo.headPic = user.headPic;
+    vo.phoneNumber = user.phoneNumber;
+    vo.nickName = user.nickName;
+    vo.createTime = user.createTime;
+    vo.isFrozen = user.isFrozen;
+
+    return vo;
   }
 
   async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto) {
