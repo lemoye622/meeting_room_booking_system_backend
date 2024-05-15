@@ -14,6 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserDto } from './dto/udpate-user.dto';
+import { UserListVo } from './vo/user-list.vo';
 
 @Injectable()
 export class UserService {
@@ -79,7 +80,7 @@ export class UserService {
       email: user.email,
     });
     if (findUserEnail) {
-      throw new HttpException('该邮箱已注册', HttpStatus.BAD_REQUEST);
+      throw new HttpException('该邮箱已被注册', HttpStatus.BAD_REQUEST);
     }
 
     const captcha = await this.redisService.get(`captcha_${user.email}`);
@@ -267,10 +268,11 @@ export class UserService {
       where: condition
     });
 
-    return {
-      users,
-      total
-    }
+    const vo = new UserListVo();
+    vo.users = users;
+    vo.total = total;
+
+    return vo;
   }
 
   getUserPermissions(user: User) {
