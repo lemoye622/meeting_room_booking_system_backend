@@ -185,7 +185,7 @@ export class UserService {
     return vo;
   }
 
-  async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto) {
+  async updatePassword(passwordDto: UpdateUserPasswordDto) {
     const captcha = await this.redisService.get(`update_password_captcha_${passwordDto.email}`);
     if(!captcha) {
       throw new HttpException('验证码已失效', HttpStatus.BAD_REQUEST);
@@ -195,8 +195,12 @@ export class UserService {
     }
 
     const foundUser  = await this.userRepository.findOneBy({
-      id: userId,
+      username: passwordDto.username
     });
+
+    if (foundUser.email !== passwordDto.email) {
+      throw new HttpException('邮箱不正确', HttpStatus.BAD_REQUEST);
+    }
 
     foundUser.password = md5(passwordDto.password);
 
