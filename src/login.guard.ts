@@ -14,6 +14,7 @@ import { JwtService } from '@nestjs/jwt';
 interface JwtUserData {
   userId: number;
   username: string;
+  email: string;
   roles: Array<string>;
   permissions: Array<Permission>;
 }
@@ -61,6 +62,7 @@ export class LoginGuard implements CanActivate {
       req.user = {
         userId: data.userId,
         username: data.username,
+        email: data.email,
         roles: data.roles,
         permissions: data.permissions,
       };

@@ -97,7 +97,7 @@ export class UserController {
   async userLogin(@Body() loginUserDto: LoginUserDto) {
     const vo = await this.userService.login(loginUserDto, false);
     const { access_token, refresh_token } =
-      this.userService.getAccessAndRefreshToken(vo.userInfo);
+    this.userService.getAccessAndRefreshToken(vo.userInfo);
     vo.accessToken = access_token;
     vo.refreshToken = refresh_token;
     return vo;
@@ -264,7 +264,7 @@ export class UserController {
   })
   @RequireLogin()
   @Get('update/captcha')
-  async updateCaptcha(@Query('address') address: string) {
+  async updateCaptcha(@UserInfo('email') address: string) {
     const code = Math.random().toString().slice(2,8);
     await this.redisService.set(`update_user_captcha_${address}`, code, 10 * 60);
     await this.emailService.sendMail({

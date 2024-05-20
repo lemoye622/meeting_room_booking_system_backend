@@ -159,6 +159,7 @@ export class UserService {
     return {
       id: user.id,
       username: user.username,
+      email: user.email,
       isAdmin: user.isAdmin,
       roles: user.roles.map((item) => item.name),
       permissions: this.getUserPermissions(user),
@@ -295,6 +296,7 @@ export class UserService {
       {
         userId: data.id,
         username: data.username,
+        email: data.email,
         roles: data.roles,
         permissions: data.permissions,
       },
