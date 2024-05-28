@@ -111,7 +111,8 @@ export class MeetingRoomService {
   }
 
   async findById(id: number) {
-    return await this.repository.findOneBy({
+    // 作为返回值这里可以不加await
+    return this.repository.findOneBy({
       id,
     });
   }
