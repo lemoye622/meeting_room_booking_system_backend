@@ -257,13 +257,13 @@ export class UserService {
 
     // 模糊查询
     if(username) {
-      condition.username = Like(`%${username}%`);   
+      condition.username = Like(`%${username}%`);
     }
     if(nickName) {
-        condition.nickName = Like(`%${nickName}%`); 
+        condition.nickName = Like(`%${nickName}%`);
     }
     if(email) {
-        condition.email = Like(`%${email}%`); 
+        condition.email = Like(`%${email}%`);
     }
 
     const [users, total ] = await this.userRepository.findAndCount({

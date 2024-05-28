@@ -22,7 +22,7 @@ async function bootstrap() {
   // 添加 uploads 目录为静态目录
   app.useStaticAssets('uploads', {
     prefix: '/uploads'
-  })
+  });
 
   // 指定Swagger文档配置
   const config = new DocumentBuilder()
