@@ -40,4 +40,9 @@ export class BookingController {
   async unbind(@Param('id') id: number) {
     return this.bookingService.unbind(id);
   }
+
+  @Get('urge/:id')
+  async urge(@Param('id') id: number) {
+    return this.bookingService.urge(id);
+  }
 }

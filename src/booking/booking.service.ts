@@ -5,11 +5,19 @@ import { User } from 'src/user/entities/user.entity';
 import { MeetingRoom } from 'src/meeting-room/entities/meeting-room.entity';
 import { Booking } from './entities/booking.entity';
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { RedisService } from 'src/redis/redis.service';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class BookingService {
   @InjectEntityManager()
   private entityManager: EntityManager;
+
+  @Inject(RedisService)
+  private redisService: RedisService;
+
+  @Inject(EmailService)
+  private emailService: EmailService;
 
   async initData() {
     const user1 = await this.entityManager.findOneBy(User, {
@@ -176,5 +184,40 @@ export class BookingService {
       status: '已解除'      
     });
     return 'success'
+  }
+
+  async urge(id: number) {
+    // 先用 redisService 查询 flag，查到的话就提醒半小时内只能催办一次
+    // 然后用 redisService 查询 admin 的邮箱，没查到的话到数据库查，然后存到 redis
+    // 之后发催办邮件，并且在 redis 里存一个 30 分钟的 flag
+    const flag = await this.redisService.get('urge_' + id);
+    if (flag) {
+      return '半小时内只能催办一次，请耐心等待';
+    }
+
+    let email = await this.redisService.get('admin_email');
+
+    if (!email) {
+      const admin = await this.entityManager.findOne(User, {
+        select: {
+          email: true
+        },
+        where: {
+          isAdmin: true
+        }
+      });
+
+      email = admin.email;
+
+      this.redisService.set('admin_email', admin.email);
+    }
+
+    this.emailService.sendMail({
+      to: email,
+      subject: '预定申请催办提醒',
+      html: `id 为 ${id} 的预定申请正在等待审批`
+    });
+
+    this.redisService.set('urge_' + id, 1, 60 * 30);
   }
 }
