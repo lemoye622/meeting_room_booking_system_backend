@@ -34,7 +34,7 @@ export class MeetingRoomService {
 
   async find(
     page: number,
-    size: number,
+    limit: number,
     name: string,
     capacity: number,
     equipment: string,
@@ -43,7 +43,7 @@ export class MeetingRoomService {
       throw new BadRequestException('页码最小为1');
     }
 
-    const skip = (page - 1) * size;
+    const skip = (page - 1) * limit;
     const condition: Record<string, any> = {};
 
     if (name) {
@@ -56,14 +56,14 @@ export class MeetingRoomService {
       condition.capacity = capacity;
     }
 
-    const [meetingRoms, totalCount] = await this.repository.findAndCount({
+    const [meetingRooms, totalCount] = await this.repository.findAndCount({
       skip,
-      take: size,
+      take: limit,
       where: condition,
     });
 
     return {
-      meetingRoms,
+      meetingRooms,
       totalCount,
     };
   }
