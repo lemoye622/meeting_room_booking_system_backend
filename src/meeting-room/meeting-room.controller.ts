@@ -1,6 +1,6 @@
 import { Body, Controller, DefaultValuePipe, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { MeetingRoomService } from './meeting-room.service';
-import { generateParseInPipe } from 'src/utils';
+import { generateParseIntPipe } from 'src/utils';
 import { CreateMeetingRoomDto } from './dto/create-meeting-room.dto';
 import { UpdateMeetingRoomDto } from './dto/update-meeting-room.dto';
 
@@ -10,8 +10,8 @@ export class MeetingRoomController {
 
   @Get('list')
   async list(
-    @Query('page', new DefaultValuePipe(1), generateParseInPipe('page')) page: number,
-    @Query('limit', new DefaultValuePipe(2), generateParseInPipe('limit')) limit: number,
+    @Query('page', new DefaultValuePipe(1), generateParseIntPipe('page')) page: number,
+    @Query('limit', new DefaultValuePipe(2), generateParseIntPipe('limit')) limit: number,
     @Query('name') name: string,
     @Query('capacity') capacity: number,
     @Query('equipment') equipment: string
