@@ -7,7 +7,7 @@ export class StatisticController {
   private statisticService: StatisticService;
 
   @Get('userBookingCount')
-  async userBookignCount(@Query('startTime') startTime: string, @Query('endTime') endTime) {
+  async userBookingCount(@Query('startTime') startTime: string, @Query('endTime') endTime) {
     return this.statisticService.userBookingCount(startTime, endTime);
   }
 
